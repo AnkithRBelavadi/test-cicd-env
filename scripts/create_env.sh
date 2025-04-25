@@ -17,41 +17,34 @@ PORT=$(aws ssm get-parameter --name "$PARAM_PORT" --with-decryption --query "Par
 # Set app directory
 APP_DIR="/root/app"
 
-# Install Python and pip (if not already installed)
-echo "Installing Python and pip..."
-if ! command -v python3 &> /dev/null
-then
+# Install Python 3 and pip (if not already installed)
+echo "Installing Python 3 and pip..."
+if ! command -v python3 &> /dev/null; then
     apt update
     apt install -y python3
     apt install -y python3-pip
     apt install -y python3-venv
 fi
 
-# Install virtualenv (if not installed)
-if ! command -v virtualenv &> /dev/null
-then
-    pip install virtualenv
-fi
-
-# Create virtual environment (if not already present)
+# Create virtual environment using python3
 if [ ! -d "$APP_DIR/venv" ]; then
     echo "Creating virtual environment..."
-    python -m venv "$APP_DIR/venv"
+    python3 -m venv "$APP_DIR/venv"
 fi
 
 # Activate the virtual environment
 source "$APP_DIR/venv/bin/activate"
 
-# Install dependencies from requirements.txt
+# Install dependencies
 if [ -f "$APP_DIR/requirements.txt" ]; then
-    echo "Installing dependencies from requirements.txt..."
+    echo "Installing dependencies..."
     pip3 install -r "$APP_DIR/requirements.txt"
 else
     echo "requirements.txt not found in $APP_DIR"
     exit 1
 fi
 
-# Create .env file with SSM parameters
+# Create .env file
 echo "Creating .env file..."
 cat > "$APP_DIR/.env" <<EOF
 APP_NAME=$APP_NAME
@@ -59,9 +52,9 @@ DEBUG=$DEBUG
 PORT=$PORT
 EOF
 
-echo ".env file created successfully at $APP_DIR/.env"
+echo ".env file created at $APP_DIR/.env"
 
-# Start the FastAPI app using uvicorn
-echo "Starting FastAPI app..."
+# Run FastAPI app
 cd "$APP_DIR"
+echo "Starting FastAPI app..."
 uvicorn main:app --host 0.0.0.0 --port "$PORT"
