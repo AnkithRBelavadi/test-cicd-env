@@ -17,16 +17,12 @@ PORT=$(aws ssm get-parameter --name "$PARAM_PORT" --with-decryption --query "Par
 # Set app directory
 APP_DIR="/root/app"
 
-# Install Python 3 and pip (if not already installed)
-echo "Installing Python 3 and pip..."
-if ! command -v python3 &> /dev/null; then
-    apt update
-    apt install -y python3
-    apt install -y python3-pip
-    apt install -y python3-venv
-fi
+# Install Python 3 and pip
+echo "Installing Python 3, pip, and venv..."
+sudo apt update
+sudo apt install -y python3 python3-pip python3-venv
 
-# Create virtual environment using python3
+# Create virtual environment
 if [ ! -d "$APP_DIR/venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv "$APP_DIR/venv"
@@ -37,8 +33,9 @@ source "$APP_DIR/venv/bin/activate"
 
 # Install dependencies
 if [ -f "$APP_DIR/requirements.txt" ]; then
-    echo "Installing dependencies..."
-    pip3 install -r "$APP_DIR/requirements.txt"
+    echo "Installing dependencies from requirements.txt..."
+    pip install --upgrade pip
+    pip install -r "$APP_DIR/requirements.txt"
 else
     echo "requirements.txt not found in $APP_DIR"
     exit 1
