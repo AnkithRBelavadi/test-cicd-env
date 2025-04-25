@@ -3,7 +3,7 @@ os: linux
 files:
   - source: /   
     destination: /root/  
-
-AfterInstall:
-  - location: app/scripts/create_env.sh
-  - timeout: 180
+hooks:
+  AfterInstall:
+    - location: app/scripts/create_env.sh
+    - timeout: 180
