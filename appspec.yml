@@ -1,8 +1,8 @@
 version: 0.0
 os: linux
 files:
-  - source: /   
-    destination: /root/  
+  - source: /
+    destination: /root/
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
@@ -11,5 +11,5 @@ hooks:
 
   AfterInstall:
     - location: scripts/create_env.sh
-    - timeout: 180
+      timeout: 180
       runas: root
