@@ -4,6 +4,12 @@ files:
   - source: /   
     destination: /root/  
 hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 180
+      runas: root
+
   AfterInstall:
-    - location: app/scripts/create_env.sh
+    - location: scripts/create_env.sh
     - timeout: 180
+      runas: root
