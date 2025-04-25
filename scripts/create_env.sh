@@ -28,13 +28,13 @@ fi
 # Install virtualenv (if not installed)
 if ! command -v virtualenv &> /dev/null
 then
-    pip3 install virtualenv
+    pip install virtualenv
 fi
 
 # Create virtual environment (if not already present)
 if [ ! -d "$APP_DIR/venv" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv "$APP_DIR/venv"
+    python -m venv "$APP_DIR/venv"
 fi
 
 # Activate the virtual environment
