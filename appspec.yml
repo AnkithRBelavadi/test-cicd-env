@@ -11,5 +11,4 @@ hooks:
 
   AfterInstall:
     - location: scripts/create_env.sh
-      timeout: 180
       runas: root

@@ -17,12 +17,15 @@ PORT=$(aws ssm get-parameter --name "$PARAM_PORT" --with-decryption --query "Par
 # Set app directory
 APP_DIR="/root/app"
 
-# Install Python 3 and pip
-echo "Installing Python 3, pip, and venv..."
-sudo apt update
-sudo apt install -y python3 python3-pip python3-venv
+# Update package index
+echo "Updating apt..."
+apt update -y
 
-# Create virtual environment
+# Install Python 3, pip, and venv if not already installed
+echo "Installing Python3, pip and venv..."
+apt install -y python3 python3-pip python3-venv
+
+# Create virtual environment if not already created
 if [ ! -d "$APP_DIR/venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv "$APP_DIR/venv"
@@ -31,7 +34,7 @@ fi
 # Activate the virtual environment
 source "$APP_DIR/venv/bin/activate"
 
-# Install dependencies
+# Install requirements
 if [ -f "$APP_DIR/requirements.txt" ]; then
     echo "Installing dependencies from requirements.txt..."
     pip install --upgrade pip
@@ -51,7 +54,9 @@ EOF
 
 echo ".env file created at $APP_DIR/.env"
 
-# Run FastAPI app
-cd "$APP_DIR"
+# Start FastAPI app in background
 echo "Starting FastAPI app..."
-uvicorn main:app --host 0.0.0.0 --port "$PORT"
+cd "$APP_DIR"
+nohup "$APP_DIR/venv/bin/uvicorn" main:app --host 0.0.0.0 --port "$PORT" > /dev/null 2>&1 &
+
+echo "Deployment script completed."
