@@ -17,15 +17,12 @@ PORT=$(aws ssm get-parameter --name "$PARAM_PORT" --with-decryption --query "Par
 # Set app directory
 APP_DIR="/root/app"
 
-# Update package index
-echo "Updating apt..."
-apt update -y
-
-# Install Python 3, pip, and venv if not already installed
-echo "Installing Python3, pip and venv..."
+# Install Python 3 and pip if not present
+echo "Installing Python and tools..."
+apt update
 apt install -y python3 python3-pip python3-venv
 
-# Create virtual environment if not already created
+# Create virtual environment
 if [ ! -d "$APP_DIR/venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv "$APP_DIR/venv"
@@ -34,10 +31,9 @@ fi
 # Activate the virtual environment
 source "$APP_DIR/venv/bin/activate"
 
-# Install requirements
+# Install dependencies
 if [ -f "$APP_DIR/requirements.txt" ]; then
-    echo "Installing dependencies from requirements.txt..."
-    pip install --upgrade pip
+    echo "Installing dependencies..."
     pip install -r "$APP_DIR/requirements.txt"
 else
     echo "requirements.txt not found in $APP_DIR"
@@ -51,12 +47,13 @@ APP_NAME=$APP_NAME
 DEBUG=$DEBUG
 PORT=$PORT
 EOF
-
 echo ".env file created at $APP_DIR/.env"
 
-# Start FastAPI app in background
-echo "Starting FastAPI app..."
-cd "$APP_DIR"
-nohup "$APP_DIR/venv/bin/uvicorn" main:app --host 0.0.0.0 --port "$PORT" > /dev/null 2>&1 &
+# Stop previous uvicorn process if any
+echo "Stopping old uvicorn process if running..."
+pkill -f "uvicorn main:app" || true
 
-echo "Deployment script completed."
+# Start FastAPI app
+cd "$APP_DIR"
+echo "Starting FastAPI app..."
+nohup "$APP_DIR/venv/bin/uvicorn" main:app --host 0.0.0.0 --port "$PORT" > /dev/null 2>&1 &
