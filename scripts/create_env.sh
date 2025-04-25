@@ -45,7 +45,7 @@ source "$APP_DIR/venv/bin/activate"
 # Install dependencies from requirements.txt
 if [ -f "$APP_DIR/requirements.txt" ]; then
     echo "Installing dependencies from requirements.txt..."
-    pip install -r "$APP_DIR/requirements.txt"
+    pip3 install -r "$APP_DIR/requirements.txt"
 else
     echo "requirements.txt not found in $APP_DIR"
     exit 1
