@@ -1,11 +1,9 @@
 version: 0.0
 os: linux
 files:
-  - source: /
-    destination: /home/ec2-user/your-app-folder
-
+  - source: /    # Deploy everything from the root folder
+    destination: /home/ec2-user/app/    # Target location on EC2 instance
 hooks:
-  BeforeInstall:
-    - location: scripts/create_env.sh
-      timeout: 60
-      runas: ec2-user
+  AfterInstall:
+    - location: app/scripts/create_env.sh  # Run the script to fetch and create the .env
+    - timeout: 180
